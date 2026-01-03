@@ -1,0 +1,40 @@
+services:
+  analytics-ingestion:
+    build:
+      context: ../..
+      dockerfile: crates/adi-analytics-ingestion/Dockerfile
+    environment:
+      - PORT=8094
+      - DATABASE_URL=${DATABASE_URL}
+      - RUST_LOG=${RUST_LOG:-info}
+    networks:
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      # HTTPS router
+      - "traefik.http.routers.analytics-ingestion.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics/ingest`)"
+      - "traefik.http.routers.analytics-ingestion.entrypoints=https"
+      - "traefik.http.routers.analytics-ingestion.tls=true"
+      - "traefik.http.routers.analytics-ingestion.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.analytics-ingestion.priority=10"
+      # Strip /api/analytics/ingest prefix before forwarding
+      - "traefik.http.routers.analytics-ingestion.middlewares=analytics-ingestion-stripprefix"
+      - "traefik.http.middlewares.analytics-ingestion-stripprefix.stripprefix.prefixes=/api/analytics/ingest"
+      # HTTP to HTTPS redirect
+      - "traefik.http.routers.analytics-ingestion-http.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics/ingest`)"
+      - "traefik.http.routers.analytics-ingestion-http.entrypoints=http"
+      - "traefik.http.routers.analytics-ingestion-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.analytics-ingestion-http.priority=10"
+      # Service
+      - "traefik.http.services.analytics-ingestion.loadbalancer.server.port=8094"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8094/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+networks:
+  coolify:
+    external: true
