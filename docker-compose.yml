@@ -12,16 +12,16 @@ services:
     labels:
       - "traefik.enable=true"
       # HTTPS router
-      - "traefik.http.routers.analytics-ingestion.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics/ingest`)"
+      - "traefik.http.routers.analytics-ingestion.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics-ingestion`)"
       - "traefik.http.routers.analytics-ingestion.entrypoints=https"
       - "traefik.http.routers.analytics-ingestion.tls=true"
       - "traefik.http.routers.analytics-ingestion.tls.certresolver=letsencrypt"
       - "traefik.http.routers.analytics-ingestion.priority=10"
-      # Strip /api/analytics/ingest prefix before forwarding
+      # Strip /api/analytics-ingestion prefix before forwarding
       - "traefik.http.routers.analytics-ingestion.middlewares=analytics-ingestion-stripprefix"
-      - "traefik.http.middlewares.analytics-ingestion-stripprefix.stripprefix.prefixes=/api/analytics/ingest"
+      - "traefik.http.middlewares.analytics-ingestion-stripprefix.stripprefix.prefixes=/api/analytics-ingestion"
       # HTTP to HTTPS redirect
-      - "traefik.http.routers.analytics-ingestion-http.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics/ingest`)"
+      - "traefik.http.routers.analytics-ingestion-http.rule=Host(`adi.the-ihor.com`) && PathPrefix(`/api/analytics-ingestion`)"
       - "traefik.http.routers.analytics-ingestion-http.entrypoints=http"
       - "traefik.http.routers.analytics-ingestion-http.middlewares=redirect-to-https"
       - "traefik.http.routers.analytics-ingestion-http.priority=10"

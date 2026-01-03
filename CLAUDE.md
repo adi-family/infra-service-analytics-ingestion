@@ -25,7 +25,7 @@ docker compose up -d
 ```
 
 ## URL
-Production: https://adi.the-ihor.com/api/analytics/ingest
+Production: https://adi.the-ihor.com/api/analytics-ingestion
 
 ## Notes
 - Write-only service (no query endpoints)
