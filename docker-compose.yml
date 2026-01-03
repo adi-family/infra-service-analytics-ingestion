@@ -1,8 +1,8 @@
 services:
   analytics-ingestion:
     build:
-      context: ../..
-      dockerfile: crates/adi-analytics-ingestion/Dockerfile
+      context: .
+      dockerfile: adi-analytics-ingestion/Dockerfile
     environment:
       - PORT=8094
       - DATABASE_URL=${DATABASE_URL}
